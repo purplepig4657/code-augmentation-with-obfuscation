@@ -1,0 +1,2 @@
+pycparser==2.22
+regex==2024.9.11
