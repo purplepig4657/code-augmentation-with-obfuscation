@@ -98,13 +98,17 @@ class NameChanger(c_ast.NodeVisitor):
             node.name = self.func_name_map[node.name]
 
     def rename(self, file_path: str):
-        ast = parse_file(file_path)
-        self.visit(ast)
+        try:
+            ast = parse_file(file_path)
+            self.visit(ast)
 
-        generator = c_generator.CGenerator()
-        renamed_code = generator.visit(ast)
+            generator = c_generator.CGenerator()
+            renamed_code = generator.visit(ast)
 
-        with open(file_path, 'w') as file:
-            file.write(renamed_code)
+            with open(file_path, 'w') as file:
+                file.write(renamed_code)
 
-        return True
+            return True
+        except Exception as e:
+            print(f"Error occurred while renaming {file_path}: {e}")
+            return False

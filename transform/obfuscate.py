@@ -76,13 +76,20 @@ class Obfuscator:
             --out={self.result_path}/{'_'.join([file_name, obfuscation_type])}.c
         """
 
-        process_output = subprocess.run(
-            command, 
-            stdout=subprocess.DEVNULL, 
-            stderr=subprocess.DEVNULL, 
-            shell=True  # noqa: S607
-        )
+        try:
+            process_output = subprocess.run(
+                command, 
+                stdout=subprocess.DEVNULL, 
+                stderr=subprocess.DEVNULL, 
+                shell=True,  # noqa: S607
+                timeout=10
+            )
+        except subprocess.TimeoutExpired:
+            print(f"Command execution timed out after 10 seconds")
+            return False
+
         if process_output.returncode != 0:
             print(f"Error occurred while obfuscating {file}: {process_output.returncode}")
             return False
+
         return True if process_output.returncode == 0 else False
