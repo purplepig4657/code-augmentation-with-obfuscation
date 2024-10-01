@@ -2,7 +2,7 @@ import regex
 
 class Preprocessor:
     GENERATED_STRUCTS = ['_IO_FILE', 'timeval', '__sFILE', '__sFILEX', '__sbuf', '__anonstruct__RuneCharClass_1021650748', '__anonstruct__RuneEntry_453100079', '__anonstruct__RuneLocale_110080762', '__anonstruct__RuneRange_1000210131', 'timespec']
-    TYPEDEF_KEYWORDS = ['__darwin', 'wint_t', '__uint32_t', 'fpos_t', 'wctype_t']
+    TYPEDEF_KEYWORDS = ['wint_t', '__uint32_t', 'fpos_t', 'wctype_t']
 
     def __init__(
         self,
