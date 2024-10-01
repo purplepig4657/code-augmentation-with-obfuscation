@@ -1,4 +1,5 @@
 import os
+import platform
 import subprocess
 import shutil
 
@@ -57,9 +58,16 @@ class Obfuscator:
         if not self.__is_compilable(file):
             print("This code is not compilable.")
             return False
+
         file_name = file.split("/")[-1].split(".")[0]
+
+        if platform.system() == "Darwin" and platform.machine() == "arm64":
+            command_prefix = "/usr/bin/arch -x86_64"
+        else:
+            command_prefix = ""
+
         command = f"""
-            /usr/bin/arch -x86_64 {self.tigress_path} \\
+            {command_prefix} {self.tigress_path} \\
             --Environment=x86_64:Darwin:Clang:5.1 \\
             --Transform={obfuscation_type} \\
             --gcc={self.compiler} \\
@@ -67,6 +75,7 @@ class Obfuscator:
             {file} \\
             --out={self.result_path}/{'_'.join([file_name, obfuscation_type])}.c
         """
+
         process_output = subprocess.run(
             command, 
             stdout=subprocess.DEVNULL, 
