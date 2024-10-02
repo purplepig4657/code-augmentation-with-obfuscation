@@ -37,9 +37,13 @@ for file in target_files:
     file_name = file.split('/')[-1].split('.')[0]
     if obfuscate_success:
         name_changer = NameChanger()
-        preprocessor.preprocess(f"{RESULT_PATH}/{file_name}_{obfuscate_type}.c")
-        name_changer.rename(f"{RESULT_PATH}/{file_name}_{obfuscate_type}.c")
-        obfuscate_successed += 1
+        preprocess_success = preprocessor.preprocess(f"{RESULT_PATH}/{file_name}_{obfuscate_type}.c")
+        rename_success = name_changer.rename(f"{RESULT_PATH}/{file_name}_{obfuscate_type}.c")
+        if preprocess_success and rename_success:
+            obfuscate_successed += 1
+        else:
+            print(f"Failed to preprocess or rename {file}")
+            obfuscate_failed += 1
     else:
         print(f"Failed to obfuscate {file}")
         obfuscate_failed += 1
