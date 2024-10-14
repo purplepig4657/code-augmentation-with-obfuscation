@@ -75,16 +75,21 @@ class Preprocessor:
         remove_typedefs: bool = True,
         remove_comments: bool = True,
         remove_inline_functions: bool = True,
+        remove_includes: bool = True,
     ):
         self.remove_extern = remove_extern
         self.remove_generated_struct = remove_generated_struct
         self.remove_typedefs = remove_typedefs
         self.remove_comments = remove_comments
         self.remove_inline_functions = remove_inline_functions
+        self.remove_includes = remove_includes
 
     def preprocess(self, file: str) -> bool:
         with open(file, 'r') as f:
             content = f.read()
+
+        if self.remove_includes:
+            content = regex.sub(r'^\s*#\s*include\s*[<"].*[>"]\s*$', '', content, flags=regex.MULTILINE)
 
         if self.remove_extern:
             content = regex.sub(r'^extern[\s\S]*?;[\s\n]*', '', content, flags=regex.MULTILINE)
