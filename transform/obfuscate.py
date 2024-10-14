@@ -53,7 +53,7 @@ class Obfuscator:
             print(f"Error occurred while inserting tigress header: {e}")
             return False
 
-    def obfuscate(self, file: str, obfuscation_type: Literal["AddOpaque", "Flatten"] = "Flatten") -> bool:
+    def obfuscate(self, file: str, obfuscation_type: Literal["AddOpaque", "Flatten", "EncodeArithmetic"] = "Flatten") -> bool:
         self.__insert_tigress_header(file)
 
         if not self.__is_compilable(file):
@@ -81,6 +81,17 @@ class Obfuscator:
                 --Functions=\\* \\
                 --AddOpaqueKinds=true \\
                 --AddOpaqueCount=1 \\
+                --gcc={self.compiler} \\
+                {file} \\
+                --out={self.result_path}/{'_'.join([file_name, obfuscation_type])}.c
+            """
+        elif obfuscation_type == "EncodeArithmetic":
+            command = f"""
+                {base_command} \\
+                --Environment=x86_64:Darwin:Clang:5.1 \\
+                --Transform=EncodeArithmetic \\
+                --Functions=\\* \\
+                --EncodeArithmeticKinds=integer \\
                 --gcc={self.compiler} \\
                 {file} \\
                 --out={self.result_path}/{'_'.join([file_name, obfuscation_type])}.c
