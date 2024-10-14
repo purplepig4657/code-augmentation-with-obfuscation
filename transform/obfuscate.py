@@ -2,6 +2,7 @@ import os
 import platform
 import subprocess
 import shutil
+from typing import Literal
 
 class Obfuscator:
     def __init__(self, 
@@ -52,7 +53,7 @@ class Obfuscator:
             print(f"Error occurred while inserting tigress header: {e}")
             return False
 
-    def obfuscate(self, file: str, obfuscation_type: str = "Flatten") -> bool:
+    def obfuscate(self, file: str, obfuscation_type: Literal["AddOpaque", "Flatten"] = "Flatten") -> bool:
         self.__insert_tigress_header(file)
 
         if not self.__is_compilable(file):
@@ -66,21 +67,39 @@ class Obfuscator:
         else:
             command_prefix = ""
 
-        command = f"""
-            {command_prefix} {self.tigress_path} \\
-            --Environment=x86_64:Darwin:Clang:5.1 \\
-            --Transform={obfuscation_type} \\
-            --gcc={self.compiler} \\
-            --Functions=\\* \\
-            {file} \\
-            --out={self.result_path}/{'_'.join([file_name, obfuscation_type])}.c
-        """
+        base_command = f"{command_prefix} {self.tigress_path} --Seed=42"
+
+        if obfuscation_type == "AddOpaque":
+            command = f"""
+                {base_command} \\
+                --Environment=x86_64:Darwin:Clang:5.1 \\
+                --Transform=InitOpaque \\
+                --Functions=\\* \\
+                --AddOpaqueStructs=env \\
+                --InitOpaqueCount=1 \\
+                --Transform=AddOpaque \\
+                --Functions=\\* \\
+                --AddOpaqueKinds=true \\
+                --AddOpaqueCount=1 \\
+                --gcc={self.compiler} \\
+                {file} \\
+                --out={self.result_path}/{'_'.join([file_name, obfuscation_type])}.c
+            """
+        else:  # Flatten
+            command = f"""
+                {base_command} \\
+                --Environment=x86_64:Darwin:Clang:5.1 \\
+                --Transform=Flatten \\
+                --Functions=\\* \\
+                --gcc={self.compiler} \\
+                {file} \\
+                --out={self.result_path}/{'_'.join([file_name, obfuscation_type])}.c
+            """
 
         try:
             process_output = subprocess.run(
                 command, 
                 stdout=subprocess.DEVNULL, 
-                stderr=subprocess.DEVNULL, 
                 shell=True,  # noqa: S607
                 timeout=10
             )
@@ -92,4 +111,4 @@ class Obfuscator:
             print(f"Error occurred while obfuscating {file}: {process_output.returncode}")
             return False
 
-        return True if process_output.returncode == 0 else False
+        return True
