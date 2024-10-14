@@ -7,6 +7,7 @@ class FileLoader:
             self.__data_directory = data_directory
         else:
             self.__data_directory = os.path.join(self.__project_root, data_directory)
+            print(self.__data_directory)
 
     def find_source_files(self):
         source_files = []

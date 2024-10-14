@@ -6,13 +6,13 @@ from transform import NameChanger
 
 from file_load import FileLoader
 
-RESULT_PATH = "obfuscated"
+RESULT_PATH = "poj-test-obf-norename"
 TIGRESS_INCLUDE_PATH = "includes"
 
-file_loader = FileLoader(os.path.dirname(os.path.abspath(__file__)))
+file_loader = FileLoader(os.path.dirname(os.path.abspath(__file__)), "data-test")
 
 obfuscator = Obfuscator(
-    "/usr/bin/clang", 
+    "/usr/bin/clang-17 -std=c99", 
     project_root=file_loader.project_root, 
     result_path=RESULT_PATH, 
     tigress_include_path=TIGRESS_INCLUDE_PATH

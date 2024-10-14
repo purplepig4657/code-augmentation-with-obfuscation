@@ -100,6 +100,7 @@ class Obfuscator:
             process_output = subprocess.run(
                 command, 
                 stdout=subprocess.DEVNULL, 
+                stderr=subprocess.DEVNULL, 
                 shell=True,  # noqa: S607
                 timeout=10
             )

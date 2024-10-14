@@ -15,11 +15,11 @@ def generate_names(prefix):
 
 class NameChanger(c_ast.NodeVisitor):
     def __init__(self):
-        self.func_name_generator = generate_names("f_")
+        self.func_name_generator = generate_names("f")
         self.func_name_map = {}
-        self.var_name_generator = generate_names("v_")
+        self.var_name_generator = generate_names("v")
         self.var_name_map = {}
-        self.global_name_generator = generate_names("g_")
+        self.global_name_generator = generate_names("g")
         self.global_name_map = {}
 
     def visit_FileAST(self, node):
@@ -51,7 +51,7 @@ class NameChanger(c_ast.NodeVisitor):
 
     def visit_FuncDef(self, node):
         self.var_name_map = {}
-        self.var_name_generator = generate_names("v_")
+        self.var_name_generator = generate_names("v")
         if node.decl.name != 'main' and "complex_decl" not in node.decl.name:
             if node.decl.name not in self.func_name_map:
                 new_name = next(self.func_name_generator)
